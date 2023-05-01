@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test selection</title>
+</head>
+
+<body>
+  <title>Upload new File</title>
+  <h1>Upload new File</h1>
+  <form method=post enctype=multipart/form-data>
+    <input type=file name=file>
+    <!-- <input type=text name=template placeholder="watermark template" value=w1.pdf> -->
+    <select name="template">
+      <option value="">Select watermark template</option>
+      <option value="w1.pdf">template 1</option>
+      <option value="w2.pdf">template 2</option>
+    </select>
+    <input type=text name=password placeholder="pdf password">
+    <input type=submit value=Upload>
+  </form>
+</body>
+
+</html>
