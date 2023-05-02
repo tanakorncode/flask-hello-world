@@ -74,15 +74,18 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(join(app.config['UPLOAD_FOLDER'], filename))
-            os.chmod(join('.', app.config['UPLOAD_FOLDER'], filename), 0o0777)
-            os.chmod(join(app.config['UPLOAD_FOLDER']), 0o0777)
+            originfile = join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(originfile)
+            # os.chmod(join('.', app.config['UPLOAD_FOLDER'], filename), 0o0777)
+            # os.chmod(join(app.config['UPLOAD_FOLDER']), 0o0777)
 
-            watermark(join(app.config['UPLOAD_FOLDER'], filename), join('files', request.form.get(
-                'template')), join('uploads', "pdf_result_" + request.form.get(
-                    'template')), request.form.get('password'))
-            return send_file(join('..', 'uploads', "pdf_result_" + request.form.get(
-                'template')), mimetype='application/pdf')
+            template = request.form.get('template')
+            password = request.form.get('password')
+            pdf_result = "pdf_result_" + template  # pdf_result_w1.pdf
+
+            watermark(originfile, join('files', template),
+                      join(UPLOAD_FOLDER, pdf_result), password)
+            return send_file(join('..', UPLOAD_FOLDER, pdf_result), mimetype='application/pdf')
             # return redirect(url_for('download_file', name=filename))
     return render_template('upload.html')
 
