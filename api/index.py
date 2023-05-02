@@ -75,6 +75,8 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(join(app.config['UPLOAD_FOLDER'], filename))
+            os.chmod(join(app.config['UPLOAD_FOLDER'], filename), 0o0777)
+            os.chmod(join(app.config['UPLOAD_FOLDER']), 0o0777)
 
             watermark(join(app.config['UPLOAD_FOLDER'], filename), join('files', request.form.get(
                 'template')), join('files', "pdf_result.pdf"), request.form.get('password'))
@@ -87,5 +89,5 @@ def upload_file():
 def about():
     return 'About'
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
