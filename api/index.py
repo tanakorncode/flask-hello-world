@@ -245,7 +245,7 @@ def preview_pdf():
 #     return 'About'
 
 def watermark_template2(mediabox, watermarktempfile):
-    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
     pdf.set_font("Helvetica", size=48)
     # pdf.text(x=60, y=60, txt="Some text.")
@@ -254,22 +254,33 @@ def watermark_template2(mediabox, watermarktempfile):
 
     # pdf.cell(mediabox.width + 300, mediabox.height*1.6, 'CONFIDENTIAL', center=True, align='R')
     # pdf.cell(mediabox.width/100*60, mediabox.height*1.6, 'CONFIDENTIAL', center=True)
-    print(mediabox.width)
-    print(mediabox.height)
+
     if(mediabox.width < mediabox.height):
-      pdf.image("wm2.png", x=mediabox.width/100*30, y=mediabox.height/100*40, w=250)
-      pdf.image("wm2.png", x=mediabox.width/100*40, y=-40, w=250)
-      pdf.image("wm2.png", x=mediabox.width/100*20, y=mediabox.height/100*90, w=250)
-      pdf.image("wm2.png", x=mediabox.width/100*90, y=mediabox.height/100*45, w=250)
-      pdf.image("wm2.png", x=-150, y=mediabox.height/100*35, w=250)
-      pdf.image("wm2.png", x=-150, y=-10, w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*30/100), y=-20, w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*30/100), y=float(mediabox.height*35/100), w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*30/100), y=float(mediabox.height*80/100), w=250)
+
+      pdf.image("wm2.png", x=-120, y=-20, w=250)
+      pdf.image("wm2.png", x=-140, y=float(mediabox.height*33/100), w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*85/100), y=float(mediabox.height*45/100), w=250)
+      
+      # pdf.image("wm2.png", x=float(mediabox.width/100*40), y=-40, w=250)
+      # pdf.image("wm2.png", x=float(mediabox.width/100*20), y=float(mediabox.height/100*90), w=250)
+      # pdf.image("wm2.png", x=float(mediabox.width/100*90), y=float(mediabox.height/100*45), w=250)
+      # pdf.image("wm2.png", x=-150, y=float(mediabox.height/100*35), w=250)
+      # pdf.image("wm2.png", x=-150, y=-10, w=250)
     else:
-      pdf.image("wm2.png", x=mediabox.width/100*40, y=mediabox.height/100*30, w=250)
-      pdf.image("wm2.png", x=mediabox.width/100*30, y=-80, w=250)
-      pdf.image("wm2.png", x=mediabox.width/100*45, y=mediabox.height/100*80, w=250)
-      pdf.image("wm2.png", x=mediabox.width/100*85, y=mediabox.height/100*20, w=250)
-      pdf.image("wm2.png", x=-40, y=mediabox.height/100*40, w=250)
-      pdf.image("wm2.png", x=-20, y=-mediabox.height/100*25, w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*40/100), y=-80, w=250)
+      pdf.image("wm2.png", x=0, y=float(mediabox.width*25/100), w=250)
+      pdf.image("wm2.png", x=-120, y=-20, w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*40/100), y=float(mediabox.width*33/100), w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*85/100), y=float(mediabox.width*35/100), w=250)
+      pdf.image("wm2.png", x=float(mediabox.width*85/100), y=float(-35), w=250)
+      # pdf.image("wm2.png", x=float(mediabox.width/100*30), y=-80, w=250)
+      # pdf.image("wm2.png", x=float(mediabox.width/100*45), y=float(mediabox.height/100*80), w=250)
+      # pdf.image("wm2.png", x=float(mediabox.width/100*85), y=float(mediabox.height/100*20), w=250)
+      # pdf.image("wm2.png", x=-40, y=float(mediabox.height/100*40), w=250)
+      # pdf.image("wm2.png", x=-20, y=float(-mediabox.height/100*25), w=250)
 
     # horizontal
     # if(mediabox.width > mediabox.height):
@@ -280,7 +291,7 @@ def watermark_template2(mediabox, watermarktempfile):
     pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
 
 def watermark_template3(mediabox, watermarktempfile):
-    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
     pdf.set_font("Helvetica", size=48)
     # pdf.text(x=60, y=60, txt="Some text.")
@@ -290,9 +301,9 @@ def watermark_template3(mediabox, watermarktempfile):
     # pdf.cell(mediabox.width + 300, mediabox.height*1.6, 'CONFIDENTIAL', center=True, align='R')
     # pdf.cell(mediabox.width/100*60, mediabox.height*1.6, 'CONFIDENTIAL', center=True)
     if(mediabox.width > mediabox.height):
-      pdf.image("wm2.png", x=mediabox.width/100*33, y=mediabox.height/100*30, w=250)
+      pdf.image("wm2.png", x=float(mediabox.width/100*33), y=float(mediabox.height/100*30), w=250)
     else:
-      pdf.image("wm2.png", x=mediabox.width/100*30, y=mediabox.height/100*30, w=250)
+      pdf.image("wm2.png", x=float(mediabox.width/100*30), y=float(mediabox.height/100*30), w=250)
 
     pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
 
@@ -307,42 +318,40 @@ def watermark_template3(mediabox, watermarktempfile):
     #     writer.write(output_stream)
 
 def watermark_template4(mediabox, watermarktempfile):
-    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
     pdf.set_font("Helvetica", size=24)
     # pdf.text(x=60, y=140, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
     # top
-    pdf.cell(mediabox.width - 180, 100, 'CONFIDENTIAL', center=True, align='L')
-    pdf.cell(mediabox.width + 20, 100, 'CONFIDENTIAL', center=True, align='R', ln=0)
-    # pdf.cell(mediabox.width / 3, mediabox.height/1.2, 'CONFIDENTIAL1', 0, ln=0, center=True)
+    pdf.cell(float(mediabox.width*80/100), 100, 'CONFIDENTIAL', center=True, align='L')
+    pdf.cell(float(mediabox.width*95/100), 100, 'CONFIDENTIAL', center=True, align='R', ln=0)
 
-    pdf.cell(mediabox.width + 200, mediabox.height/100*60, 'CONFIDENTIAL', center=True)
-    pdf.cell(mediabox.width / 3.3, mediabox.height/100*60, 'CONFIDENTIAL', center=True)
-    pdf.cell(mediabox.width + 280, mediabox.height/100*60, 'CONFIDENTIAL', center=True, align='R')
+    pdf.cell(float(mediabox.width*130/100), float(mediabox.height*60/100), 'CONFIDENTIAL', center=True, align='L')
+    pdf.cell(float(mediabox.width*30/100), float(mediabox.height*60/100), 'CONFIDENTIAL', center=True)
+    pdf.cell(float(mediabox.width*130/100), float(mediabox.height*60/100), 'CONFIDENTIAL', center=True, align='R')
 
-    # center bottom
-    pdf.cell(mediabox.width - 150, mediabox.height/0.9, 'CONFIDENTIAL', center=True)
-    pdf.cell(mediabox.width + 30, mediabox.height/0.9, 'CONFIDENTIAL', center=True, align='R')
+    # # center bottom
+    pdf.cell(float(mediabox.width*80/100), float(mediabox.height*110/100), 'CONFIDENTIAL', center=True, align='L')
+    pdf.cell(float(mediabox.width*95/100), float(mediabox.height*110/100), 'CONFIDENTIAL', center=True, align='R')
 
-    # bottom center
-    pdf.cell(mediabox.width / 3.3, mediabox.height*1.7, 'CONFIDENTIAL', center=True)
-    # bottom left
-    pdf.cell(mediabox.width + 200, mediabox.height*1.7, 'CONFIDENTIAL', center=True)
-    # bottom right
-    pdf.cell(mediabox.width + 280, mediabox.height*1.7, 'CONFIDENTIAL', center=True, align='R')
+    # # bottom center
+    pdf.cell(float(mediabox.width*130/100), float(mediabox.height*160/100), 'CONFIDENTIAL', center=True, align='L')
+    pdf.cell(float(mediabox.width*30/100), float(mediabox.height*160/100), 'CONFIDENTIAL', center=True)
+    pdf.cell(float(mediabox.width*130/100), float(mediabox.height*160/100), 'CONFIDENTIAL', center=True, align='R')
     pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
 
 def watermark_template5(mediabox, watermarktempfile):
-    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
     pdf.set_font("Helvetica", size=48)
     # pdf.text(x=60, y=140, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
+    print(mediabox.height)
     if(mediabox.width < mediabox.height):
-      pdf.cell(mediabox.width/100*60, mediabox.height/1.2, 'CONFIDENTIAL', 0, ln=0, center=True)
+      pdf.cell(float(mediabox.width*55/100), float(mediabox.height*90/100), 'CONFIDENTIAL', center=True)
     else:
-      pdf.cell(mediabox.width/100*40, mediabox.height/1.2, 'CONFIDENTIAL', 0, ln=0, center=True)
+      pdf.cell(int(mediabox.width*40/100), float(mediabox.height*90/100), 'CONFIDENTIAL',center=True)
     pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
     
 
