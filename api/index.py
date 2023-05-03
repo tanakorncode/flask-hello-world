@@ -368,13 +368,13 @@ def watermark_pdf():
     # # Write the annotated file to disk
     # with open("watermark-template.pdf", "wb") as fp:
     #     pdf_writer.write(fp)
-    if(template == 1):
+    if(template == 2):
       watermark_template2(mediabox, watermarktempfile)
-    elif(template == 2):
-      watermark_template3(mediabox, watermarktempfile)
     elif(template == 3):
-      watermark_template4(mediabox, watermarktempfile)
+      watermark_template3(mediabox, watermarktempfile)
     elif(template == 4):
+      watermark_template4(mediabox, watermarktempfile)
+    elif(template == 5):
       watermark_template5(mediabox, watermarktempfile)
     else:
       watermark_template5(mediabox, watermarktempfile)
