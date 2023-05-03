@@ -254,7 +254,8 @@ def watermark_template2(mediabox, watermarktempfile):
 
     # pdf.cell(mediabox.width + 300, mediabox.height*1.6, 'CONFIDENTIAL', center=True, align='R')
     # pdf.cell(mediabox.width/100*60, mediabox.height*1.6, 'CONFIDENTIAL', center=True)
-
+    print(mediabox.width)
+    print(mediabox.height)
     if(mediabox.width < mediabox.height):
       pdf.image("wm2.png", x=mediabox.width/100*30, y=mediabox.height/100*40, w=250)
       pdf.image("wm2.png", x=mediabox.width/100*40, y=-40, w=250)
@@ -338,13 +339,17 @@ def watermark_template5(mediabox, watermarktempfile):
     pdf.set_font("Helvetica", size=48)
     # pdf.text(x=60, y=140, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
-    pdf.cell(mediabox.width/100*60, mediabox.height/1.2, 'CONFIDENTIAL', 0, ln=0, center=True)
+    if(mediabox.width < mediabox.height):
+      pdf.cell(mediabox.width/100*60, mediabox.height/1.2, 'CONFIDENTIAL', 0, ln=0, center=True)
+    else:
+      pdf.cell(mediabox.width/100*40, mediabox.height/1.2, 'CONFIDENTIAL', 0, ln=0, center=True)
     pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
     
 
 @app.route('/watermark-pdf', methods=['GET', 'POST'])
-def test_pdf():
+def watermark_pdf():
     url = request.args.get('url')
+    template = int(request.args.get('template'))
 
     r = requests.get(url)
     letters = string.ascii_letters
@@ -363,7 +368,17 @@ def test_pdf():
     # # Write the annotated file to disk
     # with open("watermark-template.pdf", "wb") as fp:
     #     pdf_writer.write(fp)
-    watermark_template2(mediabox, watermarktempfile)
+    if(template == 1):
+      watermark_template2(mediabox, watermarktempfile)
+    elif(template == 2):
+      watermark_template3(mediabox, watermarktempfile)
+    elif(template == 3):
+      watermark_template4(mediabox, watermarktempfile)
+    elif(template == 4):
+      watermark_template5(mediabox, watermarktempfile)
+    else:
+      watermark_template5(mediabox, watermarktempfile)
+
     # os.unlink(join('..',app.config['UPLOAD_FOLDER'], watermarktempfile))
 
     # writer = PdfWriter()
