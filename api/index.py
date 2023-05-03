@@ -463,7 +463,7 @@ def watermark_pdf():
     # return send_file(join('..', "output.pdf"), mimetype='application/pdf')
     # return send_file(join('..', UPLOAD_FOLDER, watermarktempfile), mimetype='application/pdf')
 
-    stamp(join(app.config['UPLOAD_FOLDER'], tempfile), join(UPLOAD_FOLDER, watermarktempfile),
+    watermark(join(app.config['UPLOAD_FOLDER'], tempfile), join(UPLOAD_FOLDER, watermarktempfile),
           join(UPLOAD_FOLDER, pdf_result), "")
 
     os.unlink(join(app.config['UPLOAD_FOLDER'], tempfile))
