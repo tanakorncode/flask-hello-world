@@ -1,10 +1,14 @@
 from flask import Flask
+from flask_cors import CORS
 from pathlib import Path
 from typing import Union, Literal, List
-from PyPDF2 import PdfWriter, PdfReader
+from PyPDF2 import PdfWriter, PdfReader, Transformation
+from PyPDF2.generic import AnnotationBuilder
 from flask_restful import Resource, Api
+from fpdf import FPDF
 
-import os, signal
+import os
+import signal
 import sys
 import requests
 import random
@@ -19,6 +23,7 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
@@ -29,29 +34,71 @@ def stamp(
     password: str,
     page_indices: Union[Literal["ALL"], List[int]] = "ALL",
 ):
-    if(password):
-        reader = PdfReader(stamp_pdf, False, password)
-    else:
-        reader = PdfReader(stamp_pdf)
-    # reader = PdfReader(stamp_pdf)
-    image_page = reader.pages[0]
-
     writer = PdfWriter()
 
     # reader = PdfReader(content_pdf)
     if(password):
-        reader = PdfReader(content_pdf, False, password)
+        reader1 = PdfReader(content_pdf, False, password)
     else:
-        reader = PdfReader(content_pdf)
+        reader1 = PdfReader(content_pdf)
+
+    pdf_writer = PdfWriter()
+    # pdf_writer.add_blank_page(
+    #     reader1.pages[0].mediabox.width, reader1.pages[0].mediabox.height)
+    # # Create the annotation and add it
+    # annotation = AnnotationBuilder.free_text(
+    #     "CONFIDENTIAL",
+    #     rect=reader1.pages[0].mediabox,
+    #     font="Calibri",
+    #     bold=True,
+    #     italic=True,
+    #     font_size="100pt",
+    #     font_color="cccccc",
+    #     border_color="cccccc",
+    #     background_color="cdcdcd",
+    # )
+    # pdf_writer.add_annotation(page_number=0, annotation=annotation)
+    # # Write the annotated file to disk
+    # with open("annotated-pdf.pdf", "wb") as fp:
+    #     pdf_writer.write(fp)
+
+    # reader = PdfReader(stamp_pdf)
+
+    # for page in reader.pages:
+    #     page.scale_to(reader1.pages[0].mediabox.width, reader1.pages[0].mediabox.height)
+    #     pdf_writer.add_page(page)
+
+    # letters = string.ascii_letters
+    # tempfile = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    # with open(join(app.config['UPLOAD_FOLDER'], tempfile), "wb") as fp:
+    #     pdf_writer.write(fp)
+
+    reader2 = PdfReader(stamp_pdf)
+    image_page = reader2.pages[0]
+
+    # os.unlink(join(app.config['UPLOAD_FOLDER'], tempfile))
 
     if page_indices == "ALL":
-        page_indices = list(range(0, len(reader.pages)))
+        page_indices = list(range(0, len(reader1.pages)))
     for index in page_indices:
-        content_page = reader.pages[index]
+        content_page = reader1.pages[index]
         mediabox = content_page.mediabox
         content_page.merge_page(image_page)
         content_page.mediabox = mediabox
         writer.add_page(content_page)
+        # # Create the annotation and add it
+        # annotation = AnnotationBuilder.free_text(
+        #     "Hello World\nThis is the second line!",
+        #     rect=mediabox,
+        #     font="Arial",
+        #     bold=True,
+        #     italic=True,
+        #     font_size="20pt",
+        #     font_color="00ff00",
+        #     border_color="0000ff",
+        #     background_color="cdcdcd",
+        # )
+        # writer.add_annotation(page_number=0, annotation=annotation)
 
     with open(pdf_result, "wb") as fp:
         writer.write(fp)
@@ -84,7 +131,7 @@ def watermark(
         image_page.merge_page(content_page)
         image_page.mediabox = mediabox
         writer.add_page(image_page)
-    
+
     # output = open(pdf_result, "wb")
     # return writer.write(output)
     with open(pdf_result, "wb") as fp:
@@ -131,6 +178,7 @@ def upload_file():
             # return redirect(url_for('download_file', name=filename))
     return render_template('upload.html')
 
+
 @app.route('/pdf-view', methods=['GET', 'POST'])
 def preview_pdf():
     # if request.method == 'POST':
@@ -156,9 +204,9 @@ def preview_pdf():
         f.write(r.content)
 
     pdf_result = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
-    stamp(join(app.config['UPLOAD_FOLDER'], tempfile), join('files', "w1.pdf"),
+    stamp(join(app.config['UPLOAD_FOLDER'], tempfile), join('files', "w2.pdf"),
           join(UPLOAD_FOLDER, pdf_result), "")
-    
+
     os.unlink(join(app.config['UPLOAD_FOLDER'], tempfile))
 
     return_data = io.BytesIO()
@@ -169,7 +217,7 @@ def preview_pdf():
 
     os.remove(join(UPLOAD_FOLDER, pdf_result))
 
-    return send_file(return_data, mimetype='application/pdf')
+    return send_file(return_data, mimetype='application/pdf', attachment_filename=pdf_result, as_attachment=False, download_name=pdf_result)
 
     # return send_file(join('..', UPLOAD_FOLDER, pdf_result), mimetype='application/pdf')
     # return 'get!'
@@ -195,6 +243,172 @@ def preview_pdf():
 @app.route('/about')
 def about():
     return 'About'
+
+def watermark_template2(mediabox, watermarktempfile):
+    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=48)
+    # pdf.text(x=60, y=60, txt="Some text.")
+    pdf.set_text_color(238, 238, 238)
+    # pdf.cell(mediabox.width/100*60, mediabox.height, 'CONFIDENTIAL', 0, ln=0, center=True)
+
+    # pdf.cell(mediabox.width + 300, mediabox.height*1.6, 'CONFIDENTIAL', center=True, align='R')
+    # pdf.cell(mediabox.width/100*60, mediabox.height*1.6, 'CONFIDENTIAL', center=True)
+
+    if(mediabox.width < mediabox.height):
+      pdf.image("wm2.png", x=mediabox.width/100*30, y=mediabox.height/100*40, w=250)
+      pdf.image("wm2.png", x=mediabox.width/100*40, y=-40, w=250)
+      pdf.image("wm2.png", x=mediabox.width/100*20, y=mediabox.height/100*90, w=250)
+      pdf.image("wm2.png", x=mediabox.width/100*90, y=mediabox.height/100*45, w=250)
+      pdf.image("wm2.png", x=-150, y=mediabox.height/100*35, w=250)
+      pdf.image("wm2.png", x=-150, y=-10, w=250)
+    else:
+      pdf.image("wm2.png", x=mediabox.width/100*40, y=mediabox.height/100*30, w=250)
+      pdf.image("wm2.png", x=mediabox.width/100*30, y=-80, w=250)
+      pdf.image("wm2.png", x=mediabox.width/100*45, y=mediabox.height/100*80, w=250)
+      pdf.image("wm2.png", x=mediabox.width/100*85, y=mediabox.height/100*20, w=250)
+      pdf.image("wm2.png", x=-40, y=mediabox.height/100*40, w=250)
+      pdf.image("wm2.png", x=-20, y=-mediabox.height/100*25, w=250)
+
+    # horizontal
+    # if(mediabox.width > mediabox.height):
+    #   pdf.image("wm2.png", x=mediabox.width/100*33, y=mediabox.height/100*50, w=250)
+    # else:
+    #   pdf.image("wm2.png", x=mediabox.width/100*30, y=mediabox.height/100*50, w=250)
+
+    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+
+def watermark_template3(mediabox, watermarktempfile):
+    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=48)
+    # pdf.text(x=60, y=60, txt="Some text.")
+    pdf.set_text_color(238, 238, 238)
+    # pdf.cell(mediabox.width/100*60, mediabox.height, 'CONFIDENTIAL', 0, ln=0, center=True)
+
+    # pdf.cell(mediabox.width + 300, mediabox.height*1.6, 'CONFIDENTIAL', center=True, align='R')
+    # pdf.cell(mediabox.width/100*60, mediabox.height*1.6, 'CONFIDENTIAL', center=True)
+    if(mediabox.width > mediabox.height):
+      pdf.image("wm2.png", x=mediabox.width/100*33, y=mediabox.height/100*30, w=250)
+    else:
+      pdf.image("wm2.png", x=mediabox.width/100*30, y=mediabox.height/100*30, w=250)
+
+    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+
+    # writer = PdfWriter()
+    # readerwatermark = PdfReader(join(UPLOAD_FOLDER, watermarktempfile))
+    # image_page = readerwatermark.pages[0]
+    # image_page.add_transformation(Transformation().rotate(45))
+    # # image_page.rotate(90)
+    # writer.add_page(image_page)
+
+    # with open(join(UPLOAD_FOLDER, watermarktempfile), "wb") as output_stream:
+    #     writer.write(output_stream)
+
+def watermark_template4(mediabox, watermarktempfile):
+    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=24)
+    # pdf.text(x=60, y=140, txt="Some text.")
+    pdf.set_text_color(238, 238, 238)
+    # top
+    pdf.cell(mediabox.width - 180, 100, 'CONFIDENTIAL', center=True, align='L')
+    pdf.cell(mediabox.width + 20, 100, 'CONFIDENTIAL', center=True, align='R', ln=0)
+    # pdf.cell(mediabox.width / 3, mediabox.height/1.2, 'CONFIDENTIAL1', 0, ln=0, center=True)
+
+    pdf.cell(mediabox.width + 200, mediabox.height/100*60, 'CONFIDENTIAL', center=True)
+    pdf.cell(mediabox.width / 3.3, mediabox.height/100*60, 'CONFIDENTIAL', center=True)
+    pdf.cell(mediabox.width + 280, mediabox.height/100*60, 'CONFIDENTIAL', center=True, align='R')
+
+    # center bottom
+    pdf.cell(mediabox.width - 150, mediabox.height/0.9, 'CONFIDENTIAL', center=True)
+    pdf.cell(mediabox.width + 30, mediabox.height/0.9, 'CONFIDENTIAL', center=True, align='R')
+
+    # bottom center
+    pdf.cell(mediabox.width / 3.3, mediabox.height*1.7, 'CONFIDENTIAL', center=True)
+    # bottom left
+    pdf.cell(mediabox.width + 200, mediabox.height*1.7, 'CONFIDENTIAL', center=True)
+    # bottom right
+    pdf.cell(mediabox.width + 280, mediabox.height*1.7, 'CONFIDENTIAL', center=True, align='R')
+    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+
+def watermark_template5(mediabox, watermarktempfile):
+    pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=48)
+    # pdf.text(x=60, y=140, txt="Some text.")
+    pdf.set_text_color(238, 238, 238)
+    pdf.cell(mediabox.width/100*60, mediabox.height/1.2, 'CONFIDENTIAL', 0, ln=0, center=True)
+    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+    
+
+@app.route('/watermark-pdf', methods=['GET', 'POST'])
+def test_pdf():
+    url = request.args.get('url')
+
+    r = requests.get(url)
+    letters = string.ascii_letters
+    tempfile = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    watermarktempfile = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    pdf_result = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+
+    with open(join(app.config['UPLOAD_FOLDER'], tempfile), 'wb') as f:
+        f.write(r.content)
+
+    reader = PdfReader(join(app.config['UPLOAD_FOLDER'], tempfile))
+    mediabox = reader.pages[0].mediabox
+
+    # pdf_writer = PdfWriter()
+    # pdf_writer.add_blank_page(mediabox.width, mediabox.height)
+    # # Write the annotated file to disk
+    # with open("watermark-template.pdf", "wb") as fp:
+    #     pdf_writer.write(fp)
+    watermark_template2(mediabox, watermarktempfile)
+    # os.unlink(join('..',app.config['UPLOAD_FOLDER'], watermarktempfile))
+
+    # writer = PdfWriter()
+    # writer.add_blank_page(width=mediabox.width, height=mediabox.height)
+
+    # with open("output.pdf", "wb") as output_stream:
+    #     writer.write(output_stream)
+
+    # readerwatermark = PdfReader(join(UPLOAD_FOLDER, watermarktempfile))
+    # content_page = reader.pages[0]
+    # image_page = readerwatermark.pages[0]
+    # image_page.add_transformation(Transformation().rotate(45))
+    # image_page.rotate(90)
+    # writer.add_page(image_page)
+
+    # with open("output.pdf", "wb") as output_stream:
+    #     writer.write(output_stream)
+
+    # mediabox = content_page.mediabox
+    # # content_page.add_transformation(Transformation().rotate(45))
+    # content_page.merge_page(image_page)
+    # content_page.mediabox = mediabox
+    # writer.add_page(content_page)
+
+    # with open("output.pdf", "wb") as output_stream:
+    #     writer.write(output_stream)
+
+    # return send_file(join('..', "output.pdf"), mimetype='application/pdf')
+    # return send_file(join('..', UPLOAD_FOLDER, watermarktempfile), mimetype='application/pdf')
+
+    stamp(join(app.config['UPLOAD_FOLDER'], tempfile), join(UPLOAD_FOLDER, watermarktempfile),
+          join(UPLOAD_FOLDER, pdf_result), "")
+
+    os.unlink(join(app.config['UPLOAD_FOLDER'], tempfile))
+    os.unlink(join(app.config['UPLOAD_FOLDER'], watermarktempfile))
+
+    return_data = io.BytesIO()
+    with open(join(UPLOAD_FOLDER, pdf_result), 'rb') as fo:
+        return_data.write(fo.read())
+    # (after writing, cursor will be at last byte, so move it to start)
+    return_data.seek(0)
+
+    os.remove(join(UPLOAD_FOLDER, pdf_result))
+
+    return send_file(return_data, mimetype='application/pdf', attachment_filename=pdf_result, as_attachment=False, download_name=pdf_result)
 
 
 if __name__ == '__main__':
