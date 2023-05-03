@@ -148,35 +148,35 @@ def home():
     return 'Hello, World!'
 
 
-@app.route('/watermark-pdf', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            originfile = join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(originfile)
-            # os.chmod(join('.', app.config['UPLOAD_FOLDER'], filename), 0o0777)
-            # os.chmod(join(app.config['UPLOAD_FOLDER']), 0o0777)
+# @app.route('/watermark-pdf', methods=['GET', 'POST'])
+# def upload_file():
+#     if request.method == 'POST':
+#         # check if the post request has the file part
+#         if 'file' not in request.files:
+#             flash('No file part')
+#             return redirect(request.url)
+#         file = request.files['file']
+#         # If the user does not select a file, the browser submits an
+#         # empty file without a filename.
+#         if file.filename == '':
+#             flash('No selected file')
+#             return redirect(request.url)
+#         if file and allowed_file(file.filename):
+#             filename = secure_filename(file.filename)
+#             originfile = join(app.config['UPLOAD_FOLDER'], filename)
+#             file.save(originfile)
+#             # os.chmod(join('.', app.config['UPLOAD_FOLDER'], filename), 0o0777)
+#             # os.chmod(join(app.config['UPLOAD_FOLDER']), 0o0777)
 
-            template = request.form.get('template')
-            password = request.form.get('password')
-            pdf_result = "pdf_result_" + template  # pdf_result_w1.pdf
+#             template = request.form.get('template')
+#             password = request.form.get('password')
+#             pdf_result = "pdf_result_" + template  # pdf_result_w1.pdf
 
-            stamp(originfile, join('files', template),
-                  join(UPLOAD_FOLDER, pdf_result), password)
-            return send_file(join('..', UPLOAD_FOLDER, pdf_result), mimetype='application/pdf')
-            # return redirect(url_for('download_file', name=filename))
-    return render_template('upload.html')
+#             stamp(originfile, join('files', template),
+#                   join(UPLOAD_FOLDER, pdf_result), password)
+#             return send_file(join('..', UPLOAD_FOLDER, pdf_result), mimetype='application/pdf')
+#             # return redirect(url_for('download_file', name=filename))
+#     return render_template('upload.html')
 
 
 @app.route('/pdf-view', methods=['GET', 'POST'])
@@ -240,9 +240,9 @@ def preview_pdf():
     # return render_template('upload.html')
 
 
-@app.route('/about')
-def about():
-    return 'About'
+# @app.route('/about')
+# def about():
+#     return 'About'
 
 def watermark_template2(mediabox, watermarktempfile):
     pdf = FPDF(unit='pt', format=[mediabox.width, mediabox.height])
