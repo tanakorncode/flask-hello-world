@@ -441,11 +441,11 @@ def watermark_template5(mediabox, watermarktempfile, text):
     pdf.set_text_color(238, 238, 238)
     # print(mediabox.height)
     if(mediabox.width < mediabox.height):
-        with pdf.local_context(fill_opacity=0.25):
+        with pdf.local_context(fill_opacity=0.50):
             pdf.cell(float(mediabox.width*55/100),
                      float(mediabox.height*90/100), text, center=True)
     else:
-        with pdf.local_context(fill_opacity=0.25):
+        with pdf.local_context(fill_opacity=0.50):
             pdf.cell(int(mediabox.width*40/100),
                      float(mediabox.height*90/100), text, center=True)
     pdf.output(watermarktempfile)
