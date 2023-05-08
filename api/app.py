@@ -269,43 +269,44 @@ def watermark_template2(mediabox, watermarktempfile, text):
 
     if(mediabox.width < mediabox.height):
         pdf.rotate(45)
-        # top
-        pdf.cell(float(mediabox.width*95/100),
-                 100, text, center=True, align='L')
-        pdf.cell(float(mediabox.width*95/100), 100,
-                 text, center=True, align='R', ln=0)
+        with pdf.local_context(fill_opacity=0.50):
+          # top
+          pdf.cell(float(mediabox.width*95/100),
+                  100, text, center=True, align='L')
+          pdf.cell(float(mediabox.width*95/100), 100,
+                  text, center=True, align='R', ln=0)
 
-        pdf.cell(float(mediabox.width*230/100),
-                 float(mediabox.height*60/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*130/100),
-                 float(mediabox.height*60/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*30/100),
-                 float(mediabox.height*60/100), text, center=True)
-        pdf.cell(float(mediabox.width*130/100),
-                 float(mediabox.height*60/100), text, center=True, align='R')
+          pdf.cell(float(mediabox.width*230/100),
+                  float(mediabox.height*60/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*130/100),
+                  float(mediabox.height*60/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*30/100),
+                  float(mediabox.height*60/100), text, center=True)
+          pdf.cell(float(mediabox.width*130/100),
+                  float(mediabox.height*60/100), text, center=True, align='R')
 
-        # # center bottom
-        pdf.cell(float(mediabox.width*290/100),
-                 float(mediabox.height*110/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*180/100),
-                 float(mediabox.height*110/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*80/100),
-                 float(mediabox.height*110/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*95/100),
-                 float(mediabox.height*110/100), text, center=True, align='R')
+          # # center bottom
+          pdf.cell(float(mediabox.width*290/100),
+                  float(mediabox.height*110/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*180/100),
+                  float(mediabox.height*110/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*80/100),
+                  float(mediabox.height*110/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*95/100),
+                  float(mediabox.height*110/100), text, center=True, align='R')
 
-        # # bottom center
-        pdf.cell(float(mediabox.width*130/100),
-                 float(mediabox.height*160/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*250/100),
-                 float(mediabox.height*160/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*30/100),
-                 float(mediabox.height*160/100), text, center=True)
-        pdf.cell(float(mediabox.width*130/100),
-                 float(mediabox.height*160/100), text, center=True, align='R')
+          # # bottom center
+          pdf.cell(float(mediabox.width*130/100),
+                  float(mediabox.height*160/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*250/100),
+                  float(mediabox.height*160/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*30/100),
+                  float(mediabox.height*160/100), text, center=True)
+          pdf.cell(float(mediabox.width*130/100),
+                  float(mediabox.height*160/100), text, center=True, align='R')
 
-        pdf.cell(float(mediabox.width*180/100),
-                 float(mediabox.height*220/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*180/100),
+                  float(mediabox.height*220/100), text, center=True, align='L')
         # pdf.image("wm2.png", x=float(mediabox.width*30/100), y=-20, w=250)
         # pdf.image("wm2.png", x=float(mediabox.width*30/100), y=float(mediabox.height*35/100), w=250)
         # pdf.image("wm2.png", x=float(mediabox.width*30/100), y=float(mediabox.height*80/100), w=250)
@@ -321,26 +322,27 @@ def watermark_template2(mediabox, watermarktempfile, text):
         # pdf.image("wm2.png", x=-150, y=-10, w=250)
     else:
         pdf.rotate(45)
-        # top
-        pdf.cell(float(mediabox.width*95/100),
-                 100, text, center=True, align='L')
-        pdf.cell(float(mediabox.width*95/100), 100,
-                 text, center=True, align='R', ln=0)
+        with pdf.local_context(fill_opacity=0.50):
+          # top
+          pdf.cell(float(mediabox.width*95/100),
+                  100, text, center=True, align='L')
+          pdf.cell(float(mediabox.width*95/100), 100,
+                  text, center=True, align='R', ln=0)
 
-        # pdf.cell(float(mediabox.width*230/100), float(mediabox.height*80/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*130/100),
-                 float(mediabox.height*100/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*50/100),
-                 float(mediabox.height*100/100), text, center=True, align='L')
+          # pdf.cell(float(mediabox.width*230/100), float(mediabox.height*80/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*130/100),
+                  float(mediabox.height*100/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*50/100),
+                  float(mediabox.height*100/100), text, center=True, align='L')
 
-        pdf.cell(float(mediabox.width*80/100),
-                 float(mediabox.height*200/100), text, center=True, align='L')
-        pdf.cell(float(mediabox.width*160/100),
-                 float(mediabox.height*200/100), text, center=True, align='L')
-        pdf.cell(20, float(mediabox.height*200/100),
-                 text, center=True, align='L')
-        pdf.cell(float(mediabox.width*45/100),
-                 float(mediabox.height*300/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*80/100),
+                  float(mediabox.height*200/100), text, center=True, align='L')
+          pdf.cell(float(mediabox.width*160/100),
+                  float(mediabox.height*200/100), text, center=True, align='L')
+          pdf.cell(20, float(mediabox.height*200/100),
+                  text, center=True, align='L')
+          pdf.cell(float(mediabox.width*45/100),
+                  float(mediabox.height*300/100), text, center=True, align='L')
         # pdf.image("wm2.png", x=float(mediabox.width*40/100), y=-80, w=250)
         # pdf.image("wm2.png", x=0, y=float(mediabox.width*25/100), w=250)
         # pdf.image("wm2.png", x=-120, y=-20, w=250)
@@ -375,13 +377,15 @@ def watermark_template3(mediabox, watermarktempfile, text):
     # pdf.cell(mediabox.width/100*60, mediabox.height*1.6, text, center=True)
     if(mediabox.width > mediabox.height):
         pdf.rotate(45)
-        pdf.cell(float(mediabox.width*100/100),
-                 float(mediabox.height*180/100), text, center=True)
+        with pdf.local_context(fill_opacity=0.50):
+          pdf.cell(float(mediabox.width*100/100),
+                  float(mediabox.height*180/100), text, center=True)
         # pdf.image("wm2.png", x=float(mediabox.width/100*33), y=float(mediabox.height/100*30), w=250)
     else:
         pdf.rotate(45)
-        pdf.cell(float(mediabox.width*180/100),
-                 float(mediabox.height*110/100), text, center=True)
+        with pdf.local_context(fill_opacity=0.50):
+          pdf.cell(float(mediabox.width*180/100),
+                  float(mediabox.height*110/100), text, center=True)
         # pdf.image("wm2.png", x=float(mediabox.width/100*30), y=float(mediabox.height/100*30), w=250)
 
     pdf.output(watermarktempfile)
@@ -404,31 +408,32 @@ def watermark_template4(mediabox, watermarktempfile, text):
     pdf.set_font("Prompt", size=24)
     # pdf.text(x=60, y=140, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
-    # top
-    pdf.cell(float(mediabox.width*80/100), 100, text, center=True, align='L')
-    pdf.cell(float(mediabox.width*95/100), 100,
-             text, center=True, align='R', ln=0)
+    with pdf.local_context(fill_opacity=0.50):
+      # top
+      pdf.cell(float(mediabox.width*80/100), 100, text, center=True, align='L')
+      pdf.cell(float(mediabox.width*95/100), 100,
+              text, center=True, align='R', ln=0)
 
-    pdf.cell(float(mediabox.width*130/100),
-             float(mediabox.height*60/100), text, center=True, align='L')
-    pdf.cell(float(mediabox.width*30/100),
-             float(mediabox.height*60/100), text, center=True)
-    pdf.cell(float(mediabox.width*130/100),
-             float(mediabox.height*60/100), text, center=True, align='R')
+      pdf.cell(float(mediabox.width*130/100),
+              float(mediabox.height*60/100), text, center=True, align='L')
+      pdf.cell(float(mediabox.width*30/100),
+              float(mediabox.height*60/100), text, center=True)
+      pdf.cell(float(mediabox.width*130/100),
+              float(mediabox.height*60/100), text, center=True, align='R')
 
-    # # center bottom
-    pdf.cell(float(mediabox.width*80/100),
-             float(mediabox.height*110/100), text, center=True, align='L')
-    pdf.cell(float(mediabox.width*95/100),
-             float(mediabox.height*110/100), text, center=True, align='R')
+      # # center bottom
+      pdf.cell(float(mediabox.width*80/100),
+              float(mediabox.height*110/100), text, center=True, align='L')
+      pdf.cell(float(mediabox.width*95/100),
+              float(mediabox.height*110/100), text, center=True, align='R')
 
-    # # bottom center
-    pdf.cell(float(mediabox.width*130/100),
-             float(mediabox.height*160/100), text, center=True, align='L')
-    pdf.cell(float(mediabox.width*30/100),
-             float(mediabox.height*160/100), text, center=True)
-    pdf.cell(float(mediabox.width*130/100),
-             float(mediabox.height*160/100), text, center=True, align='R')
+      # # bottom center
+      pdf.cell(float(mediabox.width*130/100),
+              float(mediabox.height*160/100), text, center=True, align='L')
+      pdf.cell(float(mediabox.width*30/100),
+              float(mediabox.height*160/100), text, center=True)
+      pdf.cell(float(mediabox.width*130/100),
+              float(mediabox.height*160/100), text, center=True, align='R')
     pdf.output(watermarktempfile)
 
 
