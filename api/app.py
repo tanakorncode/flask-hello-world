@@ -536,7 +536,7 @@ def watermark_pdf():
     # return send_file(join('..', "output.pdf"), mimetype='application/pdf')
     # return send_file(join('..', UPLOAD_FOLDER, watermarktempfile), mimetype='application/pdf')
 
-    watermark(tmp_dir, tmp_watermark_dir, tmp_result_dir, "")
+    stamp(tmp_dir, tmp_watermark_dir, tmp_result_dir, "")
 
     os.unlink(tmp_dir)
     os.unlink(tmp_watermark_dir)
