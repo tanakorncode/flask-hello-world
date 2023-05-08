@@ -6,7 +6,7 @@ from PyPDF2 import PdfWriter, PdfReader, Transformation
 from PyPDF2.generic import AnnotationBuilder
 from flask_restful import Resource, Api
 from fpdf import FPDF
-from flaskwebgui import FlaskUI  # import FlaskUI
+# from flaskwebgui import FlaskUI  # import FlaskUI
 
 import os
 import signal
