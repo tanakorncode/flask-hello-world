@@ -441,11 +441,13 @@ def watermark_template5(mediabox, watermarktempfile, text):
     pdf.set_text_color(238, 238, 238)
     # print(mediabox.height)
     if(mediabox.width < mediabox.height):
-        pdf.cell(float(mediabox.width*55/100),
-                 float(mediabox.height*90/100), text, center=True)
+        with pdf.local_context(fill_opacity=0.25):
+            pdf.cell(float(mediabox.width*55/100),
+                     float(mediabox.height*90/100), text, center=True)
     else:
-        pdf.cell(int(mediabox.width*40/100),
-                 float(mediabox.height*90/100), text, center=True)
+        with pdf.local_context(fill_opacity=0.25):
+            pdf.cell(int(mediabox.width*40/100),
+                     float(mediabox.height*90/100), text, center=True)
     pdf.output(watermarktempfile)
 
 
@@ -475,8 +477,10 @@ def watermark_pdf():
     r = requests.get(url)
     letters = string.ascii_letters
     tmp_file_name = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
-    watermark_file_name = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
-    result_file_name = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    watermark_file_name = ''.join(random.choice(letters)
+                                  for i in range(10)) + ".pdf"
+    result_file_name = ''.join(random.choice(letters)
+                               for i in range(10)) + ".pdf"
 
     tmp_path = app.config['TMP_FOLDER']
     tmp_dir = join(tmp_path, tmp_file_name)
