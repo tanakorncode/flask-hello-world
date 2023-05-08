@@ -26,6 +26,7 @@ from werkzeug.utils import secure_filename
 from os.path import join
 
 UPLOAD_FOLDER = 'uploads'
+TMP_FOLDER = '/tmp'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
@@ -33,6 +34,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}},
             expose_headers=["Content-Disposition"])
 app.config['CORS_HEADERS'] = 'application/json'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TMP_FOLDER'] = TMP_FOLDER
 
 
 def stamp(
@@ -207,23 +209,24 @@ def preview_pdf():
     r = requests.get(url)
     letters = string.ascii_letters
     tempfile = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    tmp_dir = app.config['UPLOAD_FOLDER']
 
-    with open(join(app.config['UPLOAD_FOLDER'], tempfile), 'wb') as f:
+    with open(join(tmp_dir, tempfile), 'wb') as f:
         f.write(r.content)
 
     pdf_result = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
-    stamp(join(app.config['UPLOAD_FOLDER'], tempfile), join('files', "w2.pdf"),
-          join(UPLOAD_FOLDER, pdf_result), "")
+    stamp(join(tmp_dir, tempfile), join('files', "w2.pdf"),
+          join(tmp_dir, pdf_result), "")
 
-    os.unlink(join(app.config['UPLOAD_FOLDER'], tempfile))
+    os.unlink(join(tmp_dir, tempfile))
 
     return_data = io.BytesIO()
-    with open(join(UPLOAD_FOLDER, pdf_result), 'rb') as fo:
+    with open(join(tmp_dir, pdf_result), 'rb') as fo:
         return_data.write(fo.read())
     # (after writing, cursor will be at last byte, so move it to start)
     return_data.seek(0)
 
-    os.remove(join(UPLOAD_FOLDER, pdf_result))
+    os.remove(join(tmp_dir, pdf_result))
 
     return send_file(return_data, mimetype='application/pdf', attachment_filename=pdf_result, as_attachment=False, download_name=pdf_result)
 
@@ -255,7 +258,8 @@ def preview_pdf():
 def watermark_template2(mediabox, watermarktempfile, text):
     pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
-    pdf.set_font("Helvetica", size=24)
+    pdf.add_font('Prompt', '', join('fonts', 'Prompt-Regular.ttf'), uni=True)
+    pdf.set_font("Prompt", size=24)
     # pdf.text(x=60, y=60, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
     # pdf.cell(mediabox.width/100*60, mediabox.height, text, 0, ln=0, center=True)
@@ -355,13 +359,14 @@ def watermark_template2(mediabox, watermarktempfile, text):
     # else:
     #   pdf.image("wm2.png", x=mediabox.width/100*30, y=mediabox.height/100*50, w=250)
 
-    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+    pdf.output(watermarktempfile)
 
 
 def watermark_template3(mediabox, watermarktempfile, text):
     pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
-    pdf.set_font("Helvetica", size=48)
+    pdf.add_font('Prompt', '', join('fonts', 'Prompt-Regular.ttf'), uni=True)
+    pdf.set_font("Prompt", size=48)
     # pdf.text(x=60, y=60, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
     # pdf.cell(mediabox.width/100*60, mediabox.height, text, 0, ln=0, center=True)
@@ -379,23 +384,24 @@ def watermark_template3(mediabox, watermarktempfile, text):
                  float(mediabox.height*110/100), text, center=True)
         # pdf.image("wm2.png", x=float(mediabox.width/100*30), y=float(mediabox.height/100*30), w=250)
 
-    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+    pdf.output(watermarktempfile)
 
     # writer = PdfWriter()
-    # readerwatermark = PdfReader(join(UPLOAD_FOLDER, watermarktempfile))
+    # readerwatermark = PdfReader(join(TMP_FOLDER, watermarktempfile))
     # image_page = readerwatermark.pages[0]
     # image_page.add_transformation(Transformation().rotate(45))
     # # image_page.rotate(90)
     # writer.add_page(image_page)
 
-    # with open(join(UPLOAD_FOLDER, watermarktempfile), "wb") as output_stream:
+    # with open(join(TMP_FOLDER, watermarktempfile), "wb") as output_stream:
     #     writer.write(output_stream)
 
 
 def watermark_template4(mediabox, watermarktempfile, text):
     pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
-    pdf.set_font("Helvetica", size=24)
+    pdf.add_font('Prompt', '', join('fonts', 'Prompt-Regular.ttf'), uni=True)
+    pdf.set_font("Prompt", size=24)
     # pdf.text(x=60, y=140, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
     # top
@@ -423,13 +429,14 @@ def watermark_template4(mediabox, watermarktempfile, text):
              float(mediabox.height*160/100), text, center=True)
     pdf.cell(float(mediabox.width*130/100),
              float(mediabox.height*160/100), text, center=True, align='R')
-    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+    pdf.output(watermarktempfile)
 
 
 def watermark_template5(mediabox, watermarktempfile, text):
     pdf = FPDF(unit='pt', format=[int(mediabox.width), int(mediabox.height)])
     pdf.add_page()
-    pdf.set_font("Helvetica", size=48)
+    pdf.add_font('Prompt', '', join('fonts', 'Prompt-Regular.ttf'), uni=True)
+    pdf.set_font("Prompt", size=48)
     # pdf.text(x=60, y=140, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
     # print(mediabox.height)
@@ -439,7 +446,7 @@ def watermark_template5(mediabox, watermarktempfile, text):
     else:
         pdf.cell(int(mediabox.width*40/100),
                  float(mediabox.height*90/100), text, center=True)
-    pdf.output(join(UPLOAD_FOLDER, watermarktempfile))
+    pdf.output(watermarktempfile)
 
 
 @app.route('/test-pdf', methods=['GET', 'POST'])
@@ -449,7 +456,7 @@ def test_pdf():
     letters = string.ascii_letters
     tempfile = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
 
-    tmpdir = join('/tmp', tempfile)
+    tmpdir = join(TMP_FOLDER, tempfile)
 
     with open(tmpdir, 'wb') as f:
         f.write(r.content)
@@ -467,15 +474,20 @@ def watermark_pdf():
 
     r = requests.get(url)
     letters = string.ascii_letters
-    tempfile = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
-    watermarktempfile = ''.join(random.choice(letters)
-                                for i in range(10)) + ".pdf"
-    pdf_result = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    tmp_file_name = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    watermark_file_name = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+    result_file_name = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
 
-    with open(join(app.config['UPLOAD_FOLDER'], tempfile), 'wb') as f:
+    tmp_path = app.config['TMP_FOLDER']
+    tmp_dir = join(tmp_path, tmp_file_name)
+    tmp_watermark_dir = join(tmp_path, watermark_file_name)
+    tmp_result_dir = join(tmp_path, result_file_name)
+    # tmpdir = join(app.config['UPLOAD_FOLDER'], tempfile)
+
+    with open(tmp_dir, 'wb') as f:
         f.write(r.content)
 
-    reader = PdfReader(join(app.config['UPLOAD_FOLDER'], tempfile))
+    reader = PdfReader(tmp_dir)
     mediabox = reader.pages[0].mediabox
 
     # pdf_writer = PdfWriter()
@@ -484,17 +496,17 @@ def watermark_pdf():
     # with open("watermark-template.pdf", "wb") as fp:
     #     pdf_writer.write(fp)
     if(template == 2):
-        watermark_template2(mediabox, watermarktempfile, text)
+        watermark_template2(mediabox, tmp_watermark_dir, text)
     elif(template == 3):
-        watermark_template3(mediabox, watermarktempfile, text)
+        watermark_template3(mediabox, tmp_watermark_dir, text)
     elif(template == 4):
-        watermark_template4(mediabox, watermarktempfile, text)
+        watermark_template4(mediabox, tmp_watermark_dir, text)
     elif(template == 5):
-        watermark_template5(mediabox, watermarktempfile, text)
+        watermark_template5(mediabox, tmp_watermark_dir, text)
     else:
-        watermark_template5(mediabox, watermarktempfile, text)
+        watermark_template5(mediabox, tmp_watermark_dir, text)
 
-    # os.unlink(join('..',app.config['UPLOAD_FOLDER'], watermarktempfile))
+    # os.unlink(join('..',app.config['UPLOAD_FOLDER'], tmp_watermark_dir))
 
     # writer = PdfWriter()
     # writer.add_blank_page(width=mediabox.width, height=mediabox.height)
@@ -524,21 +536,20 @@ def watermark_pdf():
     # return send_file(join('..', "output.pdf"), mimetype='application/pdf')
     # return send_file(join('..', UPLOAD_FOLDER, watermarktempfile), mimetype='application/pdf')
 
-    watermark(join(app.config['UPLOAD_FOLDER'], tempfile), join(UPLOAD_FOLDER, watermarktempfile),
-              join(UPLOAD_FOLDER, pdf_result), "")
+    watermark(tmp_dir, tmp_watermark_dir, tmp_result_dir, "")
 
-    os.unlink(join(app.config['UPLOAD_FOLDER'], tempfile))
-    os.unlink(join(app.config['UPLOAD_FOLDER'], watermarktempfile))
+    os.unlink(tmp_dir)
+    os.unlink(tmp_watermark_dir)
 
     return_data = io.BytesIO()
-    with open(join(UPLOAD_FOLDER, pdf_result), 'rb') as fo:
+    with open(tmp_result_dir, 'rb') as fo:
         return_data.write(fo.read())
     # (after writing, cursor will be at last byte, so move it to start)
     return_data.seek(0)
 
-    os.remove(join(UPLOAD_FOLDER, pdf_result))
+    os.remove(tmp_result_dir)
 
-    return send_file(return_data, mimetype='application/pdf', attachment_filename=pdf_result, as_attachment=False, download_name=pdf_result)
+    return send_file(return_data, mimetype='application/pdf', attachment_filename=result_file_name, as_attachment=False, download_name=result_file_name)
 
 
 def stamp2(
@@ -591,11 +602,13 @@ def draw_template():
     opacity = 0.25
     fontSize = 24
     text = 'CONFIDENTIAL'
+    tmp_path = app.config['TMP_FOLDER']
+
     if request.files.get('file', None) != None:
         file = request.files['file']
         # file.seek(0, os.SEEK_END)
         filename = secure_filename(file.filename)
-        originfile = join(app.config['UPLOAD_FOLDER'], filename)
+        originfile = join(tmp_path, filename)
         file.save(originfile)
         reader = PdfReader(originfile)
         mediabox = reader.pages[0].mediabox
@@ -630,7 +643,7 @@ def draw_template():
         r = requests.get(url)
         letters = string.ascii_letters
         filename = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
-        originfile = join(app.config['UPLOAD_FOLDER'], filename)
+        originfile = join(tmp_path, filename)
 
         with open(originfile, 'wb') as f:
             f.write(r.content)
@@ -709,7 +722,7 @@ def draw_template():
     letters = string.ascii_letters
     watermarkfilename = ''.join(random.choice(letters)
                                 for i in range(10)) + ".pdf"
-    watermarkfile = join(app.config['UPLOAD_FOLDER'], watermarkfilename)
+    watermarkfile = join(tmp_path, watermarkfilename)
     # pdf.output('demo.pdf')
 
     pdf.output(watermarkfile)
@@ -725,7 +738,7 @@ def draw_template():
     letters = string.ascii_letters
     resultfilename = ''.join(random.choice(letters)
                              for i in range(10)) + ".pdf"
-    resultfile = join(app.config['UPLOAD_FOLDER'], resultfilename)
+    resultfile = join(tmp_path, resultfilename)
 
     pdfpassword = ""
 
@@ -781,11 +794,13 @@ def pdf_to_image():
     opacity = 0.25
     fontSize = 24
     text = 'CONFIDENTIAL'
+    tmp_path = app.config['TMP_FOLDER']
+
     if request.files.get('file', None) != None:
         file = request.files['file']
         # file.seek(0, os.SEEK_END)
         filename = secure_filename(file.filename)
-        originfile = join(app.config['UPLOAD_FOLDER'], filename)
+        originfile = join(tmp_path, filename)
         file.save(originfile)
         reader = PdfReader(originfile)
         mediabox = reader.pages[0].mediabox
@@ -820,7 +835,7 @@ def pdf_to_image():
         r = requests.get(url)
         letters = string.ascii_letters
         filename = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
-        originfile = join(app.config['UPLOAD_FOLDER'], filename)
+        originfile = join(tmp_path, filename)
 
         with open(originfile, 'wb') as f:
             f.write(r.content)
@@ -899,7 +914,7 @@ def pdf_to_image():
     letters = string.ascii_letters
     watermarkfilename = ''.join(random.choice(letters)
                                 for i in range(10)) + ".pdf"
-    watermarkfile = join(app.config['UPLOAD_FOLDER'], watermarkfilename)
+    watermarkfile = join(tmp_path, watermarkfilename)
     # pdf.output('demo.pdf')
 
     pdf.output(watermarkfile)
@@ -915,7 +930,7 @@ def pdf_to_image():
     letters = string.ascii_letters
     resultfilename = ''.join(random.choice(letters)
                              for i in range(10)) + ".pdf"
-    resultfile = join(app.config['UPLOAD_FOLDER'], resultfilename)
+    resultfile = join(tmp_path, resultfilename)
 
     pdfpassword = ""
 
@@ -934,7 +949,7 @@ def pdf_to_image():
     zipdirname = ''.join(random.choice(letters)
                          for i in range(10))
     # folder path
-    zippath = join(app.config['UPLOAD_FOLDER'], zipdirname)
+    zippath = join(tmp_path, zipdirname)
     # create folder
     if not os.path.exists(zippath):
         os.makedirs(zippath)
@@ -943,12 +958,12 @@ def pdf_to_image():
         image.save(join(zippath, "page_%0*d.jpg" % (2, i + 1)))
     # zipfile name
     zipfilename = zipdirname + ".zip"
-    with zipfile.ZipFile(join(app.config['UPLOAD_FOLDER'], zipfilename), 'w', zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(join(tmp_path, zipfilename), 'w', zipfile.ZIP_DEFLATED) as zipf:
         zipdir(zippath, zipf)
     shutil.rmtree(zippath, ignore_errors=True)
 
     return_data = io.BytesIO()
-    with open(join(app.config['UPLOAD_FOLDER'], zipfilename), 'rb') as fo:
+    with open(join(tmp_path, zipfilename), 'rb') as fo:
         return_data.write(fo.read())
     # (after writing, cursor will be at last byte, so move it to start)
     return_data.seek(0)
@@ -956,7 +971,7 @@ def pdf_to_image():
     # delete file
     os.unlink(originfile)
     os.unlink(watermarkfile)
-    os.unlink(join(app.config['UPLOAD_FOLDER'], zipfilename))
+    os.unlink(join(tmp_path, zipfilename))
     os.remove(resultfile)
 
     return send_file(return_data, mimetype='application/zip', attachment_filename=zipfilename, as_attachment=False, download_name=zipfilename)
