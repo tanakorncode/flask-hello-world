@@ -1,4 +1,3 @@
-from flask import Flask
 from flask_cors import CORS
 from pathlib import Path
 from typing import Union, Literal, List
@@ -20,13 +19,14 @@ import json
 import pypdfium2 as pdfium
 import zipfile
 import shutil
+import pdfkit
 from threading import Timer
 from flask import Flask, flash, request, redirect, url_for, render_template, send_from_directory, send_file, jsonify
 from werkzeug.utils import secure_filename
 from os.path import join
 
 UPLOAD_FOLDER = 'uploads'
-TMP_FOLDER = '/tmp'
+TMP_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
@@ -270,43 +270,43 @@ def watermark_template2(mediabox, watermarktempfile, text):
     if(mediabox.width < mediabox.height):
         pdf.rotate(45)
         with pdf.local_context(fill_opacity=0.50):
-          # top
-          pdf.cell(float(mediabox.width*95/100),
-                  100, text, center=True, align='L')
-          pdf.cell(float(mediabox.width*95/100), 100,
-                  text, center=True, align='R', ln=0)
+            # top
+            pdf.cell(float(mediabox.width*95/100),
+                     100, text, center=True, align='L')
+            pdf.cell(float(mediabox.width*95/100), 100,
+                     text, center=True, align='R', ln=0)
 
-          pdf.cell(float(mediabox.width*230/100),
-                  float(mediabox.height*60/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*130/100),
-                  float(mediabox.height*60/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*30/100),
-                  float(mediabox.height*60/100), text, center=True)
-          pdf.cell(float(mediabox.width*130/100),
-                  float(mediabox.height*60/100), text, center=True, align='R')
+            pdf.cell(float(mediabox.width*230/100),
+                     float(mediabox.height*60/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*130/100),
+                     float(mediabox.height*60/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*30/100),
+                     float(mediabox.height*60/100), text, center=True)
+            pdf.cell(float(mediabox.width*130/100),
+                     float(mediabox.height*60/100), text, center=True, align='R')
 
-          # # center bottom
-          pdf.cell(float(mediabox.width*290/100),
-                  float(mediabox.height*110/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*180/100),
-                  float(mediabox.height*110/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*80/100),
-                  float(mediabox.height*110/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*95/100),
-                  float(mediabox.height*110/100), text, center=True, align='R')
+            # # center bottom
+            pdf.cell(float(mediabox.width*290/100),
+                     float(mediabox.height*110/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*180/100),
+                     float(mediabox.height*110/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*80/100),
+                     float(mediabox.height*110/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*95/100),
+                     float(mediabox.height*110/100), text, center=True, align='R')
 
-          # # bottom center
-          pdf.cell(float(mediabox.width*130/100),
-                  float(mediabox.height*160/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*250/100),
-                  float(mediabox.height*160/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*30/100),
-                  float(mediabox.height*160/100), text, center=True)
-          pdf.cell(float(mediabox.width*130/100),
-                  float(mediabox.height*160/100), text, center=True, align='R')
+            # # bottom center
+            pdf.cell(float(mediabox.width*130/100),
+                     float(mediabox.height*160/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*250/100),
+                     float(mediabox.height*160/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*30/100),
+                     float(mediabox.height*160/100), text, center=True)
+            pdf.cell(float(mediabox.width*130/100),
+                     float(mediabox.height*160/100), text, center=True, align='R')
 
-          pdf.cell(float(mediabox.width*180/100),
-                  float(mediabox.height*220/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*180/100),
+                     float(mediabox.height*220/100), text, center=True, align='L')
         # pdf.image("wm2.png", x=float(mediabox.width*30/100), y=-20, w=250)
         # pdf.image("wm2.png", x=float(mediabox.width*30/100), y=float(mediabox.height*35/100), w=250)
         # pdf.image("wm2.png", x=float(mediabox.width*30/100), y=float(mediabox.height*80/100), w=250)
@@ -323,26 +323,26 @@ def watermark_template2(mediabox, watermarktempfile, text):
     else:
         pdf.rotate(45)
         with pdf.local_context(fill_opacity=0.50):
-          # top
-          pdf.cell(float(mediabox.width*95/100),
-                  100, text, center=True, align='L')
-          pdf.cell(float(mediabox.width*95/100), 100,
-                  text, center=True, align='R', ln=0)
+            # top
+            pdf.cell(float(mediabox.width*95/100),
+                     100, text, center=True, align='L')
+            pdf.cell(float(mediabox.width*95/100), 100,
+                     text, center=True, align='R', ln=0)
 
-          # pdf.cell(float(mediabox.width*230/100), float(mediabox.height*80/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*130/100),
-                  float(mediabox.height*100/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*50/100),
-                  float(mediabox.height*100/100), text, center=True, align='L')
+            # pdf.cell(float(mediabox.width*230/100), float(mediabox.height*80/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*130/100),
+                     float(mediabox.height*100/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*50/100),
+                     float(mediabox.height*100/100), text, center=True, align='L')
 
-          pdf.cell(float(mediabox.width*80/100),
-                  float(mediabox.height*200/100), text, center=True, align='L')
-          pdf.cell(float(mediabox.width*160/100),
-                  float(mediabox.height*200/100), text, center=True, align='L')
-          pdf.cell(20, float(mediabox.height*200/100),
-                  text, center=True, align='L')
-          pdf.cell(float(mediabox.width*45/100),
-                  float(mediabox.height*300/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*80/100),
+                     float(mediabox.height*200/100), text, center=True, align='L')
+            pdf.cell(float(mediabox.width*160/100),
+                     float(mediabox.height*200/100), text, center=True, align='L')
+            pdf.cell(20, float(mediabox.height*200/100),
+                     text, center=True, align='L')
+            pdf.cell(float(mediabox.width*45/100),
+                     float(mediabox.height*300/100), text, center=True, align='L')
         # pdf.image("wm2.png", x=float(mediabox.width*40/100), y=-80, w=250)
         # pdf.image("wm2.png", x=0, y=float(mediabox.width*25/100), w=250)
         # pdf.image("wm2.png", x=-120, y=-20, w=250)
@@ -378,14 +378,14 @@ def watermark_template3(mediabox, watermarktempfile, text):
     if(mediabox.width > mediabox.height):
         pdf.rotate(45)
         with pdf.local_context(fill_opacity=0.50):
-          pdf.cell(float(mediabox.width*100/100),
-                  float(mediabox.height*180/100), text, center=True)
+            pdf.cell(float(mediabox.width*100/100),
+                     float(mediabox.height*180/100), text, center=True)
         # pdf.image("wm2.png", x=float(mediabox.width/100*33), y=float(mediabox.height/100*30), w=250)
     else:
         pdf.rotate(45)
         with pdf.local_context(fill_opacity=0.50):
-          pdf.cell(float(mediabox.width*180/100),
-                  float(mediabox.height*110/100), text, center=True)
+            pdf.cell(float(mediabox.width*180/100),
+                     float(mediabox.height*110/100), text, center=True)
         # pdf.image("wm2.png", x=float(mediabox.width/100*30), y=float(mediabox.height/100*30), w=250)
 
     pdf.output(watermarktempfile)
@@ -409,31 +409,32 @@ def watermark_template4(mediabox, watermarktempfile, text):
     # pdf.text(x=60, y=140, txt="Some text.")
     pdf.set_text_color(238, 238, 238)
     with pdf.local_context(fill_opacity=0.50):
-      # top
-      pdf.cell(float(mediabox.width*80/100), 100, text, center=True, align='L')
-      pdf.cell(float(mediabox.width*95/100), 100,
-              text, center=True, align='R', ln=0)
+        # top
+        pdf.cell(float(mediabox.width*80/100),
+                 100, text, center=True, align='L')
+        pdf.cell(float(mediabox.width*95/100), 100,
+                 text, center=True, align='R', ln=0)
 
-      pdf.cell(float(mediabox.width*130/100),
-              float(mediabox.height*60/100), text, center=True, align='L')
-      pdf.cell(float(mediabox.width*30/100),
-              float(mediabox.height*60/100), text, center=True)
-      pdf.cell(float(mediabox.width*130/100),
-              float(mediabox.height*60/100), text, center=True, align='R')
+        pdf.cell(float(mediabox.width*130/100),
+                 float(mediabox.height*60/100), text, center=True, align='L')
+        pdf.cell(float(mediabox.width*30/100),
+                 float(mediabox.height*60/100), text, center=True)
+        pdf.cell(float(mediabox.width*130/100),
+                 float(mediabox.height*60/100), text, center=True, align='R')
 
-      # # center bottom
-      pdf.cell(float(mediabox.width*80/100),
-              float(mediabox.height*110/100), text, center=True, align='L')
-      pdf.cell(float(mediabox.width*95/100),
-              float(mediabox.height*110/100), text, center=True, align='R')
+        # # center bottom
+        pdf.cell(float(mediabox.width*80/100),
+                 float(mediabox.height*110/100), text, center=True, align='L')
+        pdf.cell(float(mediabox.width*95/100),
+                 float(mediabox.height*110/100), text, center=True, align='R')
 
-      # # bottom center
-      pdf.cell(float(mediabox.width*130/100),
-              float(mediabox.height*160/100), text, center=True, align='L')
-      pdf.cell(float(mediabox.width*30/100),
-              float(mediabox.height*160/100), text, center=True)
-      pdf.cell(float(mediabox.width*130/100),
-              float(mediabox.height*160/100), text, center=True, align='R')
+        # # bottom center
+        pdf.cell(float(mediabox.width*130/100),
+                 float(mediabox.height*160/100), text, center=True, align='L')
+        pdf.cell(float(mediabox.width*30/100),
+                 float(mediabox.height*160/100), text, center=True)
+        pdf.cell(float(mediabox.width*130/100),
+                 float(mediabox.height*160/100), text, center=True, align='R')
     pdf.output(watermarktempfile)
 
 
@@ -989,12 +990,220 @@ def pdf_to_image():
 
 @app.route('/preview-demo', methods=['GET'])
 def preview_demo():
-    return send_file(join('..', UPLOAD_FOLDER, 'pdf_result2.pdf'), mimetype='application/pdf', attachment_filename='pdf_result2.pdf', as_attachment=False, download_name='pdf_result2.pdf')
+    reader = PdfReader(join('files', 'example.pdf'))
+    mediabox = reader.pages[0].mediabox
+    w = float(mediabox.width)
+    h = float(mediabox.height)
+    textWidth = 182
+    textHeight = 48
+    centerX = float(mediabox.width) / 2 - (textWidth / 2)
+    print(mediabox)
+    print(math.radians(360))
+
+    pdf = FPDF(unit='pt', format=[
+               float(mediabox.width), float(mediabox.height)])
+    pdf.add_page()
+    pdf.add_font('Prompt', '', join('fonts', 'Prompt-Regular.ttf'), uni=True)
+    pdf.set_font("Prompt", size=24)
+    # pdf.set_text_color(238, 238, 238)
+    pdf.set_text_color(255, 0, 0)
+    opacity = 0.25
+
+    template = int(request.args.get('template'))
+
+    if template == 1:
+        # top left
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(0), float(textHeight/2), 'CONFIDENTIAL')
+        # top center
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(centerX), float(textHeight/2), 'CONFIDENTIAL')
+        # top right
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(mediabox.width - (textWidth-10)),
+                    float(textHeight/2), 'CONFIDENTIAL')
+
+        # center left
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(0), float(
+                (mediabox.height/2) - textHeight), 'CONFIDENTIAL')
+        # centered
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(centerX), float(
+                (mediabox.height/2) - textHeight), 'CONFIDENTIAL')
+          # center right
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(mediabox.width - (textWidth-10)),
+                    float((mediabox.height/2) - textHeight), 'CONFIDENTIAL')
+
+        # bottom left
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(0), float(float(mediabox.height) -
+                    int(textHeight/2)), 'CONFIDENTIAL')
+        # bottom center
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(centerX), float(
+                float(mediabox.height) - int(textHeight/2)), 'CONFIDENTIAL')
+        # bottom
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(float(mediabox.width - (textWidth-10)),
+                    float(float(mediabox.height) - int(textHeight/2)), 'CONFIDENTIAL')
+
+    if template == 2:
+        # top center left
+        posX = float((mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+
+        posX = float((mediabox.width/4) - int(textWidth/2))
+        posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+    if template == 3:
+        # top center left
+        posX = float((mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        # top center right
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+
+        posX = float(mediabox.width/2) - int(textWidth/2)
+        posY = float((mediabox.height/2) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+
+        # bottom center left
+        posX = float((mediabox.width/4) - int(textWidth/2))
+        posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        # bottom center right
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+    if template == 4:
+        # top center left
+        posX = float((mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/6) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        # top center right
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/6) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+
+        posX = float(mediabox.width/2) - int(textWidth/2)
+        posY = float((mediabox.height/4) + int(textHeight))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        # top center left
+        posX = float((mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/2) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+            
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posY = float((mediabox.height/2) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        posX = float(mediabox.width - (mediabox.width/2) - int(textWidth/2))
+        posY = float((mediabox.height/2) + (mediabox.height/6) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        posX = float((mediabox.width/4) - int(textWidth/2))
+        posY = float(mediabox.height - (mediabox.height/6) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posY = float(mediabox.height - (mediabox.height/6) - int(textHeight/2))
+        with pdf.local_context(fill_opacity=opacity):
+            pdf.text(posX, posY, 'CONFIDENTIAL')
+
+
+        # posX = float((mediabox.width/4) - int(textWidth/2))
+        # posY = float(mediabox.height - int(textHeight/2))
+        # with pdf.local_context(fill_opacity=opacity):
+        #     pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        # posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        # posY = float(mediabox.height - int(textHeight/2))
+        # with pdf.local_context(fill_opacity=opacity):
+        #     pdf.text(posX, posY, 'CONFIDENTIAL')
+
+        # posX = float(mediabox.width - (mediabox.width/2) - int(textWidth/2))
+        # posY = float(mediabox.height - (mediabox.height/6) + int(textHeight))
+        # with pdf.local_context(fill_opacity=opacity):
+        #     pdf.text(posX, posY, 'CONFIDENTIAL')
+            
+
+
+    pdf.output('demo.pdf')
+    return send_file('../demo.pdf', mimetype='application/pdf', attachment_filename='pdf_result2.pdf', as_attachment=False, download_name='pdf_result2.pdf')
+
+
+@app.route('/download', methods=['GET', 'POST'])
+def download_pdf():
+    options = {
+        'page-size': 'Letter',
+        'encoding': "UTF-8",
+        # 'custom-header': [
+        #     ('Accept-Encoding', 'gzip')
+        # ],
+        # 'cookie': [
+        #     ('cookie-empty-value', '""')
+        #     ('cookie-name1', 'cookie-value1'),
+        #     ('cookie-name2', 'cookie-value2'),
+        # ],
+        # 'no-outline': None
+    }
+    body = """
+    <html>
+      <head>
+        <meta name="pdfkit-page-size" content="Legal"/>
+        <meta name="pdfkit-orientation" content="Landscape"/>
+      </head>
+      <p>การเขียนรายงาน คือการเขียนเสนอผลงานอันได้มาจากการศึกษาค้นคว้าพิเศษนอกเหนือจากเรื่องที่ได้ศึกษาในชั้นเรียนเพื่อส่งเสริมให้ผู้เรียนรู้จักแสวงหาความรู้ด้วยตนเอง</p><h3 style="text-align: start"><strong>รูปแบบของรายงาน</strong></h3><p style="text-align: start">รูปแบบของการรายงาน แบ่งออกเป็น 3 ส่วน คือ ส่วนประกอบตอนต้น ส่วนเนื้อหา และส่วนประกอบตอนท้าย ดังนี้</p><h3 style="text-align: start"><strong>ส่วนประกอบตอนต้น</strong></h3><ol><li><p>หน้าปกรายงาน ส่วนบนเขียนชื่อเรื่อง ส่วนกลางชื่อผู้รายงาน ส่วนล่างบรรทัดแรกให้เขียนว่า “ รายงานนี้เป็นส่วนหนึ่งของการศึกษาวิชา… ” บรรทัดที่สองเป็นชื่อสถาบันศึกษา ส่วนบรรทัดที่สามบอกภาคที่เรียนและปีการศึกษา</p></li><li><p>คำขอบคุณ เป็นส่วนที่ไม่บังคับ อาจมีหรือไม่มีก็ได้</p></li><li><p>คำนำ เป็นการบอกขอบข่ายของเรื่อง สาเหตุที่ทำให้เลือกทำรายงานเรื่องนี้ จุดมุ่งหมายในการเขียน</p></li><li><p>สารบัญ หมายถึง บัญชีบทต่าง ๆ ในสารบัญมีบทและตอนต่าง ๆ เรียงตามลำดับกับที่ปรากฏในหนังสือ ตลอดจนการขอบคุณผู้ที่ช่วยเหลือในการทำรายงาน</p></li><li><p>บัญชีตารางหรือภาพประกอบ (ถ้ามี) เพื่อให้มีเนื้อหาที่สมบูรณ์ยิ่งขึ้น รายงานบางเรื่องอาจต้องใช้ตาราง นิยมทำบัญชีตารางหรือบัญชีภาพประกอบไว้ในหน้าถัดไปจากสารบัญ</p></li></ol><h3 style="text-align: start"><strong>ส่วนเนื้อเรื่อง</strong></h3><ol><li><p>ส่วนที่เป็นเนื้อหา ต้องมีตอนนำ ตอนตัวเรื่อง และตอนลงท้ายเช่นเดียวกับการเขียนเรียงความ</p></li><li><p>ส่วนประกอบในเนื้อหา ได้แก่<br>• อัญประกาศ คือข้อความที่คัดมาจากคำพูดหรือข้อเขียนของผู้อื่น โดยไม่ได้ดัดแปลง<br>• เชิงอรรถ คือข้อความท้ายหน้า มีไว้เพื่อแจ้งที่มาของข้อความในตัวเรื่อง</p></li></ol><h3 style="text-align: start"><strong>ส่วนประกอบตอนท้าย</strong></h3><ol><li><p>บรรณานุกรม คือ รายชื่อสิ่งพิมพ์ตลอดจนวัสดุอ้างอิงทุกชนิด ที่เกี่ยวข้องกับการทำรายงาน พิมพ์ไว้ ตอนท้ายสุดของรายงาน การเขียนบรรณานุกรม ต้องบอกชื่อสกุลผู้แต่ง ชื่อหนังสือ ครั้งที่พิมพ์<br>• เมืองที่พิมพ์ สำนักพิมพ์ ปีที่พิมพ์ จำนวนหน้า</p></li><li><p>ภาคผนวกหรืออภิธานศัพท์ คือ ส่วนที่นำมาเพิ่มเติมท้ายรายงานเพื่อให้ผู้อ่านเข้าใจแจ่มแจ้งยิ่งขึ้น</p></li></ol><h3 style="text-align: start"><strong>กระบวนการเขียนรายงาน</strong></h3><p style="text-align: start">ขั้นตอนการเขียนรายงาน มีดังนี้</p><ol><li><p>การเลือกเรื่องและตั้งชื่อเรื่อง เรื่องที่เลือกมาศึกษา ควรเป็นเรื่องที่เสริมความรู้ในการเรียนวิชาใดวิชาหนึ่ง ขอบเขต ที่เลือกควรเหมาะสมกับเวลาในการค้นคว้าและการเขียนรายงาน</p></li><li><p>การกำหนดจุดมุ่งหมายและขอบเขตของเรื่อง จะต้องมีจุดมุ่งหมายและเสนอเรื่องราวเกี่ยวกับอะไร เพื่ออะไร มีขอบเขตเพียงใด เช่น หากจะเขียนรายงานเรื่องพิธีมงคลโกนจุกอาจกำหนดจุดมุ่งหมายและขอบเขต ดังนี้<br>• จุดมุ่งหมาย : การศึกษาประเพณีไทยโบราณ<br>• ขอบเขต : ความเป็นมาและงานพิธีโกนจุก</p></li><li><p>การเขียนโครงเรื่อง โครงเรื่อง คือ กรอบ ของเรื่องที่ใช้เป็น แนว ในการเขียนรายงานโครงเรื่องประกอบด้วย<br>• บทนำหรือความนำซึ่งมีหัวข้อใหญ่และหัวข้อย่อย ควรตั้งชื่อให้กะทัดรัด ใจความครอบคลุมเนื้อหา</p></li><li><p>การเขียนเนื้อหา ได้จากการค้นคว้า จากแหล่งต่าง ๆ ไม่ว่าจากการอ่าน การฟัง การสังเกต การสัมภาษณ์ ฯลฯ ที่ผู้เขียนได้บันทึกไว้ แต่ไม่ใช่การคัดลอกหรือตัดต่อ ผู้เขียนเรียบเรียงด้วยสำนวนของตนเอง สำนวนภาษาควรอ่านเข้าใจง่าย ใช้คำที่เหมาะสม ประโยคกะทัดรัด</p></li><li><p>บทสรุป คือสรุปผลการศึกษาค้นคว้า มีการอภิปรายผลการศึกษาค้นคว้าและเสนอแนะ ( ถ้ามี )</p></li><li><p>การอ้างถึง หมายถึงการบอกให้ทราบว่าข้อความที่ใช้ในการเขียนรายงานมาจากแหล่งใด เพื่อผู้อ่านจะได้ตรวจสอบหรือติดตามอ่านเพิ่มเติม</p></li></ol><h3 style="text-align: start"><strong>การจัดรูปแบบการเขียนรายงาน เรียงลำดับตามนี้</strong></h3><ol><li><p>หน้าปก</p></li><li><p>หน้ารองปก (กระดาษเปล่า)</p></li><li><p>หน้าปกใน (รายละเอียดเหมือนหน้าปกแต่ใช้กระดาษสีขาว)</p></li><li><p>คำนำ</p></li><li><p>สารบัญ</p></li><li><p>เนื้อเรื่อง</p></li><li><p>บรรณานุกรม</p></li><li><p>ภาคผนวก</p></li><li><p>รองปกหลัง (กระดาษเปล่า)</p></li><li><p>หน้าปกหลัง</p></li></ol><h3 style="text-align: start"><strong>การจัดหน้ากระดาษ ใช้กระดาษ A4 โดยตั้งค่าหน้ากระดาษ ดังนี้</strong></h3><ul><li><p>ซ้าย ระยะห่างเท่ากับ 1.5 นิ้ว</p></li><li><p>ขวา ระยะห่างเท่ากับ 1 นิ้ว</p></li><li><p>บน ระยะห่างเท่ากับ 1.5 นิ้ว</p></li><li><p>ล่าง ระยะห่างเท่ากับ 1 นิ้ว</p></li></ul><p style="text-align: start"><strong>หมายเหตุ</strong> 1 นิ้ว เท่ากับ 2.54 เซนติเมตร</p>
+      </html>
+    """
+    # Multiple CSS files
+    css = [os.getcwd() + '/api/static/pdf.css']
+    pdfkit.from_string(body, 'out.pdf', css=css)
+    return send_file(join('..', 'out.pdf'), mimetype='application/pdf')
 
 
 if __name__ == '__main__':
     app.run(debug=True)
     # FlaskUI(app=app, server="flask", width=300, height=300).run()
-# $ export FLASK_APP=./api/index.py
+# $ export FLASK_APP=./api/app.py
 # $ export FLASK_ENV=development
 # $ flask run
