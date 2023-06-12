@@ -6,8 +6,8 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-ENV FLASK_APP ./api/index.py
-ENV FLASK_ENV development
+ENV FLASK_APP ./api/app.py
+ENV FLASK_ENV production
 ENV FLASK_RUN_PORT 8000
 ENV FLASK_RUN_HOST 0.0.0.0
 

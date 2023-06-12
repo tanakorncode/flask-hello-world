@@ -20,6 +20,8 @@ import pypdfium2 as pdfium
 import zipfile
 import shutil
 import pdfkit
+import base64
+from urllib.parse import urlparse
 from threading import Timer
 from flask import Flask, flash, request, redirect, url_for, render_template, send_from_directory, send_file, jsonify
 from werkzeug.utils import secure_filename
@@ -29,7 +31,7 @@ UPLOAD_FOLDER = 'uploads'
 TMP_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 cors = CORS(app, resources={r"/*": {"origins": "*"}},
             expose_headers=["Content-Disposition"])
 app.config['CORS_HEADERS'] = 'application/json'
@@ -636,6 +638,7 @@ def draw_template():
     else:
         # json
         # body = request.get_json()
+        # print(body)
         # data = body['data']
         # viewport = body['viewport']
 
@@ -653,6 +656,10 @@ def draw_template():
         r = requests.get(url)
         letters = string.ascii_letters
         filename = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+        # a = urlparse(url)
+        # filename = os.path.basename(a.path)
+        # filename = url.split("/")[-1] 
+        # print(filename)
         originfile = join(tmp_path, filename)
 
         with open(originfile, 'wb') as f:
@@ -994,8 +1001,8 @@ def preview_demo():
     mediabox = reader.pages[0].mediabox
     w = float(mediabox.width)
     h = float(mediabox.height)
-    textWidth = 182
-    textHeight = 48
+    textWidth = 360
+    textHeight = 25
     centerX = float(mediabox.width) / 2 - (textWidth / 2)
     print(mediabox)
     print(math.radians(360))
@@ -1004,151 +1011,148 @@ def preview_demo():
                float(mediabox.width), float(mediabox.height)])
     pdf.add_page()
     pdf.add_font('Prompt', '', join('fonts', 'Prompt-Regular.ttf'), uni=True)
-    pdf.set_font("Prompt", size=24)
+    pdf.set_font("Prompt", size=10)
     # pdf.set_text_color(238, 238, 238)
-    pdf.set_text_color(255, 0, 0)
-    opacity = 0.25
+    pdf.set_text_color(7, 7, 1)
+    opacity = 0.08
 
     template = int(request.args.get('template'))
+    text = '74616e616b6f726e636f646540676d61696c2e636f6d09/06/256623:04:29'
 
     if template == 1:
         # top left
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(float(0), float(textHeight/2), 'CONFIDENTIAL')
+            pdf.text(float(0), float(textHeight/2), text)
         # top center
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(float(centerX), float(textHeight/2), 'CONFIDENTIAL')
+            pdf.text(float(centerX), float(textHeight/2), text)
         # top right
         with pdf.local_context(fill_opacity=opacity):
             pdf.text(float(mediabox.width - (textWidth-10)),
-                    float(textHeight/2), 'CONFIDENTIAL')
+                     float(textHeight/2), text)
 
         # center left
         with pdf.local_context(fill_opacity=opacity):
             pdf.text(float(0), float(
-                (mediabox.height/2) - textHeight), 'CONFIDENTIAL')
+                (mediabox.height/2) - textHeight), text)
         # centered
         with pdf.local_context(fill_opacity=opacity):
             pdf.text(float(centerX), float(
-                (mediabox.height/2) - textHeight), 'CONFIDENTIAL')
+                (mediabox.height/2) - textHeight), text)
           # center right
         with pdf.local_context(fill_opacity=opacity):
             pdf.text(float(mediabox.width - (textWidth-10)),
-                    float((mediabox.height/2) - textHeight), 'CONFIDENTIAL')
+                     float((mediabox.height/2) - textHeight), text)
 
         # bottom left
         with pdf.local_context(fill_opacity=opacity):
             pdf.text(float(0), float(float(mediabox.height) -
-                    int(textHeight/2)), 'CONFIDENTIAL')
+                                     int(textHeight/2)), text)
         # bottom center
         with pdf.local_context(fill_opacity=opacity):
             pdf.text(float(centerX), float(
-                float(mediabox.height) - int(textHeight/2)), 'CONFIDENTIAL')
+                float(mediabox.height) - int(textHeight/2)), text)
         # bottom
         with pdf.local_context(fill_opacity=opacity):
             pdf.text(float(mediabox.width - (textWidth-10)),
-                    float(float(mediabox.height) - int(textHeight/2)), 'CONFIDENTIAL')
+                     float(float(mediabox.height) - int(textHeight/2)), text)
 
     if template == 2:
         # top center left
         posX = float((mediabox.width/4) - int(textWidth/2))
         posY = float((mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
         posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
         posY = float((mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
-
+            pdf.text(posX, posY, text)
 
         posX = float((mediabox.width/4) - int(textWidth/2))
         posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
         posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
         posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
     if template == 3:
         # top center left
         posX = float((mediabox.width/4) - int(textWidth/2))
         posY = float((mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
         # top center right
         posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
         posY = float((mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
-
+            pdf.text(posX, posY, text)
 
         posX = float(mediabox.width/2) - int(textWidth/2)
         posY = float((mediabox.height/2) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
-
+            pdf.text(posX, posY, text)
 
         # bottom center left
         posX = float((mediabox.width/4) - int(textWidth/2))
         posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
         # bottom center right
         posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
         posY = float(mediabox.height - (mediabox.height/4) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
     if template == 4:
         # top center left
-        posX = float((mediabox.width/4) - int(textWidth/2))
+        posX = float((mediabox.width/4) - int(textWidth/2) - 100)
         posY = float((mediabox.height/6) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
         # top center right
-        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/4))
         posY = float((mediabox.height/6) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
-
+            pdf.text(posX, posY, text)
 
         posX = float(mediabox.width/2) - int(textWidth/2)
         posY = float((mediabox.height/4) + int(textHeight))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
         # top center left
-        posX = float((mediabox.width/4) - int(textWidth/2))
+        posX = float((mediabox.width/4) - int(textWidth/2) - 100)
         posY = float((mediabox.height/2) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
-            
-        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+            pdf.text(posX, posY, text)
+
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/4))
         posY = float((mediabox.height/2) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
         posX = float(mediabox.width - (mediabox.width/2) - int(textWidth/2))
-        posY = float((mediabox.height/2) + (mediabox.height/6) - int(textHeight/2))
+        posY = float((mediabox.height/2) +
+                     (mediabox.height/6) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
-        posX = float((mediabox.width/4) - int(textWidth/2))
+        posX = float((mediabox.width/4) - int(textWidth/2) - 100)
         posY = float(mediabox.height - (mediabox.height/6) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
+            pdf.text(posX, posY, text)
 
-        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/2))
+        posX = float(mediabox.width - (mediabox.width/4) - int(textWidth/4))
         posY = float(mediabox.height - (mediabox.height/6) - int(textHeight/2))
         with pdf.local_context(fill_opacity=opacity):
-            pdf.text(posX, posY, 'CONFIDENTIAL')
-
+            pdf.text(posX, posY, text)
 
         # posX = float((mediabox.width/4) - int(textWidth/2))
         # posY = float(mediabox.height - int(textHeight/2))
@@ -1164,8 +1168,6 @@ def preview_demo():
         # posY = float(mediabox.height - (mediabox.height/6) + int(textHeight))
         # with pdf.local_context(fill_opacity=opacity):
         #     pdf.text(posX, posY, 'CONFIDENTIAL')
-            
-
 
     pdf.output('demo.pdf')
     return send_file('../demo.pdf', mimetype='application/pdf', attachment_filename='pdf_result2.pdf', as_attachment=False, download_name='pdf_result2.pdf')
@@ -1199,6 +1201,103 @@ def download_pdf():
     css = [os.getcwd() + '/api/static/pdf.css']
     pdfkit.from_string(body, 'out.pdf', css=css)
     return send_file(join('..', 'out.pdf'), mimetype='application/pdf')
+
+
+@app.route('/extract-text', methods=['GET', 'POST'])
+def extract():
+
+    tmp_path = app.config['TMP_FOLDER']
+    if request.files.get('file', None) != None:
+        file = request.files['file']
+        # file.seek(0, os.SEEK_END)
+        filename = secure_filename(file.filename)
+        originfile = join(tmp_path, filename)
+        file.save(originfile)
+        reader = PdfReader(originfile)
+    else:
+        # data = json.loads(request.form['data'])
+        data = request.get_json()
+        url = data['url']
+        r = requests.get(url)
+        letters = string.ascii_letters
+        filename = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+        originfile = join(tmp_path, filename)
+
+        with open(originfile, 'wb') as f:
+            f.write(r.content)
+        reader = PdfReader(originfile)
+    # reader = PdfReader(join('files', 'Recipient.pdf'))
+
+    results = list()
+    page_indices = list(range(0, len(reader.pages)))
+    for index in page_indices:
+        current_page = reader.pages[index]
+        results.append({
+            'page': index,
+            'text': current_page.extract_text()
+        })
+    os.unlink(originfile)
+    return jsonify(results)
+
+
+@app.route('/image', methods=['GET', 'POST'])
+def to_image():
+
+    tmp_path = app.config['TMP_FOLDER']
+    if request.files.get('file', None) != None:
+        file = request.files['file']
+        # file.seek(0, os.SEEK_END)
+        filename = secure_filename(file.filename)
+        originfile = join(tmp_path, filename)
+        file.save(originfile)
+        # reader = PdfReader(originfile)
+    else:
+        # data = json.loads(request.form['data'])
+        data = request.get_json()
+        url = data['url']
+        r = requests.get(url)
+        letters = string.ascii_letters
+        filename = ''.join(random.choice(letters) for i in range(10)) + ".pdf"
+        originfile = join(tmp_path, filename)
+
+        with open(originfile, 'wb') as f:
+            f.write(r.content)
+        # reader = PdfReader(originfile)
+    # reader = PdfReader(join('files', 'Recipient.pdf'))
+
+    pdfimg = pdfium.PdfDocument(originfile)
+    n_pages = len(pdfimg)  # get the number of pages in the document
+    page_indices = [i for i in range(n_pages)]  # all pages
+    renderer = pdfimg.render(
+        pdfium.PdfBitmap.to_pil,
+        page_indices=page_indices,
+        scale=300/72,  # 300dpi resolution
+    )
+    # folder name
+    letters = string.ascii_letters
+    zipdirname = ''.join(random.choice(letters)
+                         for i in range(10))
+    # folder path
+    zippath = join(tmp_path, zipdirname)
+    # create folder
+    if not os.path.exists(zippath):
+        os.makedirs(zippath)
+    # export images
+    for i, image in zip(page_indices, renderer):
+        image.save(join(zippath, "page_%0*d.jpg" % (2, i + 1)))
+    # zipfile name
+    zipfilename = zipdirname + ".zip"
+    with zipfile.ZipFile(join(tmp_path, zipfilename), 'w', zipfile.ZIP_DEFLATED) as zipf:
+        zipdir(zippath, zipf)
+    shutil.rmtree(zippath, ignore_errors=True)
+
+    return_data = io.BytesIO()
+    with open(join(tmp_path, zipfilename), 'rb') as fo:
+        return_data.write(fo.read())
+    # (after writing, cursor will be at last byte, so move it to start)
+    return_data.seek(0)
+
+    return send_file(return_data, mimetype='application/zip', attachment_filename=zipfilename, as_attachment=False, download_name=zipfilename)
 
 
 if __name__ == '__main__':
